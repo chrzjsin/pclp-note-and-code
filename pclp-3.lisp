@@ -1,3 +1,6 @@
+;;;; 这是 pclp 第三章构建的用于储存 cd 信息的数据库系统，包含批量存入，存入文件，从文件里取出，删除符合条件的记录，修改一条记录的值，查询一条记录等功能
+;;;; 这段五十多行的代码展现了 Common Lisp 强大的编程能力，精髓在于 where 函数 改写为 where 宏，魔术一般的手法
+
 (defun make-cd(title artist rating ripped)
   (list :title title :artist artist :rating rating :ripped ripped))
 (defvar *db* nil)
@@ -28,13 +31,6 @@
       (setf *db* (read in)))))
 (defun select (selector-fn)
   (remove-if-not selector-fn *db*))
-; (defun where (&key title artist rating (ripped nil ripped-p))
-;  #'(lambda (cd)
-;      (and
-;       (if title  (equal (getf cd :title) title) t)
- ;      (if artist (equal (getf cd :artist) artist) t)
-  ;     (if rating (equal (getf cd :rating) rating) t)
-   ;    (if ripped-p (equal (getf cd :ripped) ripped) t))))
 (defun updata (selector-fn &key title artist rating (ripped nil ripped-p))
   (setf *db*
 	(mapcar
@@ -47,6 +43,16 @@
 	     row) *db*)))
 (defun delete-rows (selector-fn)
   (setf *db* (remove-if selector-fn *db*)))
+
+;;这就是原先的 where 函数与 where 宏的对比
+
+; (defun where (&key title artist rating (ripped nil ripped-p))
+;  #'(lambda (cd)
+;      (and
+;       (if title  (equal (getf cd :title) title) t)
+ ;      (if artist (equal (getf cd :artist) artist) t)
+  ;     (if rating (equal (getf cd :rating) rating) t)
+   ;    (if ripped-p (equal (getf cd :ripped) ripped) t))))
 (defun make-comparison-expr (field value)
   `(equal (getf cd ,field) ,value))
 (defun make-comparisons-list (fields)
