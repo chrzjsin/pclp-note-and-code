@@ -1,0 +1,63 @@
+第五章 函数
+Lisp 的三个组成部分：函数，变量，宏
+Lisp 本身是由大量函数构成，展开的宏也是由函数与特殊符号构成，宏本身也是函数，所以函数是 Lisp 的基本部分
+但是 Common Lisp 不能说是“纯”的函数式语言
+
+结构笔记
+1.函数的定义
+2.参数
+3.函数的返回值
+4.高阶函数
+5.匿名函数
+
+概念笔记
+1.使用 defun 定义新函数
+(defun name (parameter*)
+    "optional documention string"
+    body-form*)
+例：
+(defun verbose-sum (x y)
+	   "sum any two number after printung a message."
+	   (format t "summing ~d and ~d.~%" x y)
+	   (+ x y))
+	   
+2.函数名命名的 Lisp 风格：使连字符，例如:frob-widget,hello-world 等。
+
+3.函数体由若干表达式组成，依次求值，返回最后一个表达式的值，可以使用 RETURN-FROM 符号在函数体任意处返回。
+
+4.必要形参：调用函数必须使用固定参数，不多不少。例如：(defun foo (x y) (list x y)) , 必须有两个实参。
+
+5.可选形参：&optional 后边参数，可以不传实参，可传可不传，同时可以绑定默认值，也可以通过一个变量知道是否传入了参数。
+    例如：(defun foo (a &optional b (c 3) (d 4 d-supplied-p)) 
+            (list a b c d d-supplied-p))
+    (foo 1)         -->   (1 NIL 3 4 NIL)
+    (foo 1 2 3 4)   -->   (1 2 3 4 T)
+    
+6.剩余形参：&rest 后面接受任意形参，放入一个列表
+    例如加法+ ， 其参数列表应该类似于：(defun + (&rest numbers) ...)
+    
+7.关键字形参：&key 之后的形参可以绑定要传入的变量,也可以类似于可选形参绑定默认值。
+    例如：(defun foo (&key a b) (list a b))
+    (foo) --> (NIL NIL)
+    (foo :b 1)-->(NIL 1)
+    
+8.多种参数混合使用：先声明必要参数，再可选参数，再剩余，再关键字参数。
+    注意可选参数与关键字参数会有奇怪结果，避免混合使用，尽量改写为关键字形参。
+    
+9.函数返回值：使用 RETURN-FROM 从任何地方返回，否则返回最后一个表达式值。
+    例如：(defun foo (n)
+            (dotimes (i 10)
+                (dotimes (j 10)
+                    (when (> (* i j) n)
+                        (return-from foo (list i j)))))
+    找到就返回。
+    
+10.高阶函数：函数可以作为参数，也可以作为返回值。
+    使用 function 操作符返回一个函数的对象。#'就是此操作符的语法糖
+    使用 funcall 与 apply 调用函数对象。
+    (foo 1 2) 就等价于 (funcall #'foo 1 2)   
+    (defun f () #'foo) 就返回了一个函数。
+    
+11.匿名函数：使用 lambda 表达式创建匿名函数，(lambda (parameter*) body)
+    有时函数只使用一次就无需声明出来，就使用匿名函数。
+    另一个用途是创建闭包，下一章讲。
