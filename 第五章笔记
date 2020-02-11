@@ -61,3 +61,6 @@ Lisp 本身是由大量函数构成，展开的宏也是由函数与特殊符号
 11.匿名函数：使用 lambda 表达式创建匿名函数，(lambda (parameter*) body)
     有时函数只使用一次就无需声明出来，就使用匿名函数。
     另一个用途是创建闭包，下一章讲。
+
+总结：
+操作符：DEFUN  &optional &rest &key FUNCTION(#') FUNCALL LAMBDA
