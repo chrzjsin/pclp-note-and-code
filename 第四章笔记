@@ -59,6 +59,6 @@ Common Lisp 定义了两个黑箱：
     ；；；一个段落
     ；；一个函数，宏等
     ；单行注释
-    
-    
-          
+        
+总结：
+操作符：IF QUOTE EQ EQL EQUAL EQUALP      
