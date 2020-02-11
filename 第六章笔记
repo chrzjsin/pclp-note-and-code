@@ -1,0 +1,61 @@
+第六章 变量
+
+概念笔记：
+
+1.变量：可以保存值的具有名字的位置。
+    Common Lisp 变量可以保存任何类型值，就是动态类型，同时是强类型的。创建一个变量本质就是创建了一个对象的引用。
+    
+2.词法变量：类似于其他语言的局部变量，但是还有一些区别。
+    2.1 函数形参其实定义了变量来接受实参，在函数体内使用。
+    2.2 使用 LET 创建变量：
+        (let (variable*) body-form*)
+        每个 variable 就包括变量名，初值，此变量在 body-form 里使用。
+    2.3 绑定形式：像函数形参与 LET 变量的作用域限定于引入变量的形式里，在形式体内绑定，使用完了解绑。
+    例：函数形参作用域是函数体，LET 变量作用域也是其形式内，使用完之后又变为原来的值。
+    (defun foo (x)
+	   (format t "Parameter: ~a~%" x)
+	   (let ((x 2))
+	     (format t "Outer LET: ~a~%" x)
+	     (let ((x 3))
+	       (format t "Inner LET: ~a~%" x))
+	     (format t "Outer LET: ~a~%" x))
+	   (format t "Parameter: ~a~%" x))
+    FOO
+    CL-USER> (foo 1)
+    Parameter: 1
+    Outer LET: 2
+    Inner LET: 3
+    Outer LET: 2
+    Parameter: 1
+    
+    2.4 LET*：使用 LET* 创建变量时，可以使用变量列表里的值。
+        例：(let* ( (x 10) (y (+ x 10))) (list x y))
+    2.5 闭包：此功能是对词法变量的拓展。
+    如果在一个返回匿名函数的函数里使用了对其中变量的引用，但是此匿名函数在其他地方调用，对其中变量的引用会保存下来。这个匿名函数就称为一个闭包，关键是保存下来的是绑定。
+    例：(let ((count 10))
+            #'(lambda () (incf count)))
+    
+3. 全局变量：使用 DEFVAR 与 DEFPARAMETER 定义全局变量，结构相似,变量名，初值，说明文档，不同之处在于后者必须有初值。全局变量可以在整个程序里动态的绑定，使用。
+
+    例：
+    (defvar *count* 0    "------")
+    (defparameter *gap-to-lerance* 0.001  "------")
+    
+4. 常量：使用 DEFCONSTANT 创建。常量就是在程序里不会改变的数，是全局的，例如 pi。
+    (defconstant name init-value-form "-----" )    
+
+5. 赋值：创建绑定之后，接下来的事就是使用其值，或者改变为新值，使用 SETF 宏赋值，类似于其他语言的等号。
+    例：(setf x 1 y (+ y 2))
+    SETF 还可以给一下数据结构赋值，例如哈希表，关键是给一个位置。
+    
+6. 其他改变变量值的方法：使用 SETF 可以完成许多赋值操作，但是表达式会很长，有一些宏可以简化这种赋值操作。
+    例如：
+    (incf x) ;x自加一
+    (decf x) ;减一
+    (incf x 10) ;自加10
+    (rotatef a b c) ; 轮换他们的值，a为b，b为c，c为a
+    (shiftf a b 10) ; 值左移，a为b，b为10，a值返回。
+    
+总结：
+操作符：LET  LET*  DEFVAR  DEFPARAMETER  DEFCONSTANT
+宏： SETF INCF DECF ROTATEF SHIFTF
