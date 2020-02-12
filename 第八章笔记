@@ -1,0 +1,64 @@
+第七章 宏 标准控制构造
+宏是 Lisp 与其他语言区别的独特功能，并与其他语言的宏有很大的区别。
+
+概念笔记
+1. WHEN 宏：前面的 IF 特殊操作符在执行时，then-form 不能顺序执行多个表达式，只能使用 PROGN 操作符实现。例如：
+
+    (if condtion 
+        (progn 
+            (format t "")
+            (foramt t " ")))
+    
+    而提取这一模式，定义 WHEN 宏：(when test-form then-form*)
+    当条件达到，就顺序执行表达式，返回最后一个表达式值。
+    如果要编写一个自己的 WHEN 就写为：
+    
+    (defmacro my-when (condition &rest body)
+        `(if ,condition (progn @body)))
+
+2. UNLESS 宏：与 WHEN 相反，为假时执行。
+
+3. COND：多重分支结构，例如：
+    (cond
+        (test-1 form*)
+        (test-2 form*)
+        (test-3 form*))
+    执行时会顺序检查条件，直到有一个为真，执行其 form ，无 form 则返回真。
+    
+4. AND OR NOT：
+    NOT 是函数，单一参数，参数为 NIL 返回 T ，反之返回 NIL 。
+    AND 与 OR 是宏，接受任意表达式，AND 一假则假，OR 一真则真。
+    
+5. 循环结构：
+    Common Lisp 的 25 个特殊操作符中没有一个直接支持结构化循环。所以循环构建在一对操作符构建的宏上。
+    5.1 使用 DO，强大，但是在处理简单情况时就显得复杂。
+    
+        DOLIST：在列表上循环，依次取出元素循环，本身求值是 NIL 。
+            (dolist (var list-form) body-form*)
+            可以使用 return 中断。
+            
+        DOTIMES：计数循环
+            (dotimes (var count-form) body-form*)  
+            
+        DO：允许绑定任意变量，定义变量改变方式，定义终止条件
+            (do (variable-definition*)
+                (end-test-form result-form*)
+                statement* )
+            
+            每一个变量可以是一个三元素列表：(var init-form step-form) , 包括初值与步长。
+            循环变量更新之后，测试条件，为真则求值 result-form 返回，为 NIL 循环。更新时使用旧值。
+            例：
+            (do ( (n 0 (+ 1 n)
+                  (cur 0 next)
+                  (next 1 (+ cur next)) )
+                ((= 10 n) cur)
+                (format t "~d " n) )
+                
+     5.2 LOOP 宏：简单的 LOOP 就是一直循环，直到返回。
+        拓展的 LOOP 则有争议，在 22 章详细介绍。
+        例：(loop for i from 1 to 10 collecting i)
+        其中 for from to collecting 都是关键字，构建出 1 到 10 的列表
+        
+总结：
+宏：WHEN UNLESS COND AND OR DO LOOP 
+函数：NOT
