@@ -1,0 +1,45 @@
+第九章 实践：单元测试框架
+第二部分总结笔记  
+     
+1.第四至第八章学习了 Common Lisp 的基本语义语法，函数，变量，标准控制构造，以及自定义宏，这些就是语言的基本元素。
+
+2.本章构造了一个单元测试框架，在里面可以组织测试函数，测试用例，返回预定结果，使用了前面使用的技术。具体代码见 pclp-9.lisp 。
+
+3.从中总结 Common Lisp 写程序的基本方式，从简单的情况构造简单代码，之后抽象消除重复，不断调整修改。
+    最精华的部分是构建宏来创建了一个类似 AND 但是没有短路特性的宏，并使用新功能使代码清晰
+    
+总结
+
+1. 重要的概念：
+
+列表 原子 原子类型（数字 字符串 名字） s-表达式  Lisp 形式的s-表达式 
+ 
+函数 参数 返回值 高阶函数 匿名函数
+
+变量 词法变量 词法作用域 闭包 动态变量 常量 赋值 修改宏 
+
+宏 条件执行 多重条件分支 循环 宏形参 宏泄露 
+
+特殊操作符 谓词逻辑与等价 
+
+2. Common Lisp 内置函数，宏，特殊表达式总结：
+
+函数：FORMAT EQ EQL EQUAL EQUALP DOCUMENTATION  FUNCALL APPLY  NOT  MACROEXPAND-1  GENSYM
+
+宏：DEFUN DEFVAR DEFPARAMETER  DEFCONSTANT DEFMACRO 
+    SETF INCF DECF ROTATEF SHIFTF  
+    WHEN UNLESS COND AND OR 
+    DO LOOP DOLIST DOTIMES  
+
+特殊操作符：IF QUOTE RETURN-FROM RETURN FUNCTION LET LET*  PROGN   
+    NIL T &optional  &rest &key LAMBDA  
+    LOOP 宏的一系列符号 
+    定义宏：` , ' @ 
+    
+3. 技术点
+3.1 s-表达式与原子类型构成规则， Lisp 形式表达式句法规则
+3.2 编写一个函数，合理使用不同参数类型，使用高阶函数与匿名函数
+3.3 使用词法变量，使用闭包，定义使用全局变量，定义常量，使用 SETF 与修改宏赋值
+3.4 使用条件表达式与条件分支，循环控制程序
+3.5 编写一个宏，修改宏的泄漏问题，使用宏拓展功能
+3.6 如何编写一个 Common Lisp 程序？
