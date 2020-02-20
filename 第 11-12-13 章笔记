@@ -1,0 +1,54 @@
+第 11，12 ，13 章笔记  集合，列表 ，树
+
+1. Common Lisp 提供将多个值收集到一个对象里的标准数据类型，称为集合类型，一般分为两大类，一类是整数索引的例如：数组，列表，元组；另一类是键值对应的例如：哈希表，关联数组，映射表，字典
+
+2. 向量，就是整数索引集合类型，一维数组，分为定长与变长两类。
+	2.1 用 VECTOR 生成特定值的定长向量，例如：(vector 1 2 3) --> #(1 2 3)
+	2.2 MAKE-ARRAY 函数构建任意维数组。
+		(make-array 5 :initial-element nil) --> #(nil nil nil nil nil)
+		(make-array 5 :fill-pointer 0) --> #() ,这是变长向量，fill-pointer 称为填充指针。
+		但是想自动拓展，要使用 :adjustable t 
+	2.3 VECTOR-PUSH 函数与 VECTOR-POP 函数向尾部添加与弹出值。
+	2.4 储存任何对象的向量称为通用向量，但是，可以使用 :element-type 关键字指定类型，例如：
+		(make-array 5 :fill-pointer 0 :adjustable t :element-type 'character)   ; 可变长的字符串
+
+3. 列表：构建在点对单元（cons cell）上的数据类型。列表处理也是 Lisp 语言名的来源。
+	3.1 点对单元：
+
+	3.2 函数式编程：
+
+	3.3 破坏性操作：
+
+	3.4 列表处理与映射：
+
+	3.5 DESTRUCTURING-BIND 宏：作用是解构列表，一般形式是：
+		(destructuring-bind (parameter*)
+			list body-form*)
+		例如：
+		(destructuring-bind (x y z) (list 1 2 3)
+			(list :x x :y y :z z))
+		--> (:X 1 :Y 2 :Z 3)
+		还有一个 &whole 的参数，作用是将结果绑定在参数上。
+
+4. 树：就是列表的列表。
+	
+5. 集合：
+
+6. 关联表与属性表：
+
+7. 序列：序列是向量与列表的抽象类型，就是说，序列函数可以使用在向量与列表上。
+	5.1  LENGTH 函数，返回序列长度，例如：(length '(vector 1 2 3)) -> 3
+		ELT函数，整数索引访问元素，从 0 开始，例如：(elt '(vector 1 2 3) 0) -> 1，可以结合 SETF 宏改变值
+	5.2 序列迭代函数：
+
+	5.3 高阶函数变体：
+	
+	5.4 对整个序列的操作：（包括复制，排序，合并）
+
+	5.5 对子序列的操作：
+
+	5.6 序列谓词：
+
+	5.7 序列映射函数：
+
+8. 哈希表：
