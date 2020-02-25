@@ -1,0 +1,68 @@
+第 16 17 章 面向对象
+1. Common Lisp 的面向对象基于广义函数与类系统。
+	oop 的基本思想就是，定义数据类型，将操作关联在上面，而操作的具体行为取决于对象的类型。
+        第一个面向对象语言是 simula ， 而产生巨大影响的是 smalltalk ，Common Lisp 与它几乎同时期。
+
+2. Common Lisp 的类可以继承，构成类层次结构，而所有类的基类是类 T 。
+	Common Lisp 的类支持多继承，而多态性依赖于广义函数。而不是消息传递。
+	消息传递有一定局限性。广义函数具有拓展性，可以很简单的为一个类添加方法。
+
+3. 广义函数与方法
+	3.1 DEFGENERIC ：定义广义函数，广义函数是一个抽象函数，具有名字，参数，说明字符串，但是不提供具体实现。
+		例如：(defgeneric draw (shape)
+				(:documention "---"))
+
+	3.2 DEFMETHOD ：方法也称为特化函数，名字与广义函数一致，但是形参列表是特化的关键。
+		注意方法不是属于一个类，而是属于广义函数。
+		例如：(defmethod draw ((shape cirale)) .......)
+			  (defmethod draw ((shape tringle)) ......)
+		
+	3.3 特化与方法组合：广义函数的形参可以特化为一个两元素列表，第一个元素是形参名，而第二个元素是特化符，包括类名，EQL 特化符
+		当传入参数符合方法参数，就调用该方法，如果有多个，会依据与方法最相关的调用。
+		此时，使用 CALL-NEXT-METHOD 函数可以调用接下来相关的一个方法。
+
+	3.4 附加方法：上面说的都是主方法，而附加方法，就是提供附加功能的函数，使用限定符：
+		:before :aound :after ，会按顺序调用。
+		还有九种组合方法，使得符合的方法组合起来调用，具体参考 Common Lisp 手册。
+
+	3.5 多重方法：不同于其他语言中的方法重载，参数匹配的方法会依据相关性调用，这解决了多重继承中的难题。
+
+4. 自定义类
+	4.1 DEFCLASS
+
+	4.2 槽（slot）
+
+	4.3 对象初始化
+
+	4.4 访问函数与封装
+
+	4.5 分配在类上的槽
+
+	4.6 继承
+
+	4.7 oop 程序设计
+
+(defparameter *x* 0)
+(defclass bank-account ()
+	   ((customer-name
+	     :initarg :customer-name
+	     :initform (error "hjk."))
+	    (balance
+	     :initarg :balance
+	    :initform 0)
+	    (account-number
+	     :initform (incf *x*))
+	    account-type))
+(defmethod initialize-instance :after ((account bank-account) &key)
+	   (let ( (balance (slot-value account 'balance)))
+	     (setf (slot-value account 'account-type)
+		   (cond
+		     ((>= balance 1000) :gold)
+		     ((<= balance 500) :silver)
+		     (t :bronze)))))
+
+(defvar *class-account* (make-instance 'bank-account
+						:customer-name "chris"
+						:balance 10000))
+(slot-value *class-account* 'account-type)
+:GOLD
