@@ -1,3 +1,7 @@
+;;;; 第 15 章代码，使用读取期条件化的手法，构建了在各种 Common Lisp 实现上的可移植路径库
+;;;; 包括列出路径列表，判断路径是否存在，以及文件夹上的一个迭代器
+
+;; 辅助函数
 (defun component-present-p (value)
   (and value (not (eql value :unspecific))))
 (defun directory-pathname-p (p)
@@ -24,7 +28,8 @@
    :type #-clisp :wild #+clisp nil
    :defaults (pathname-as-directory dirname)))
 
-;;list-directory ����
+;;list-directory 函数，列出文件路径下所有文件夹与文件
+
 (defun list-directory (dirname)
   (when (wild-pathname-p dirname)
     (error "can only list concreate directory names."))
@@ -61,7 +66,8 @@
 	   :defaults pathname))
 	pathname)))
 
-;;file-exists-p ����
+;;file-exists-p 函数，判断路径下文件是否存在
+
 (defun file-exists-p (pathname)
   #+(or sbcl lispworks openmcl)
   (probe-file pathname)
@@ -81,7 +87,8 @@
   #-(or sbcl cmu lispworks openmcl allegro clisp)
   (error "file-exists-p not implemented"))
 
-;;walk-directory ����
+;;walk-directory 函数，在文件路径下做迭代
+
 (defun walk-directory (dirname fn &kay directories (test (constantly t)))
   (labels
       ((walk (name)
