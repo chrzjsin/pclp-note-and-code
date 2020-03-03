@@ -71,19 +71,67 @@
 		基本查询函数 GETF 例如：(getf *plist* :a) , 返回值。结合 SETF 宏改变值。REMF 宏移除项，(remf *plist* :a)
 			
 7. 序列：序列是向量与列表的抽象类型，就是说，序列函数可以使用在向量与列表上。
-	5.1  LENGTH 函数，返回序列长度，例如：(length '(vector 1 2 3)) -> 3
+	7.1  LENGTH 函数，返回序列长度，例如：(length '(vector 1 2 3)) -> 3
 		ELT函数，整数索引访问元素，从 0 开始，例如：(elt '(vector 1 2 3) 0) -> 1，可以结合 SETF 宏改变值
-	5.2 序列迭代函数：
+	7.2 序列迭代函数：
+		   函数          参数              返回
+		COUNT           项 序列       出现某项的次数
+		FIND            项 序列        项或者NIL
+		POSITION       项 序列         项的索引
+		REMOVE         项 序列         项移除
+		SUBSTITUTE    新项 项 序列      替换
+		
+		结合关键字参数改变函数行为，例如 :test 参数，改变比较方式，默认是 EQL
+		例如：(count "foo" #("foo" "baz" "baz") :test #'string=) -> 1
+		:start :end 限定于子序列，:from-end 从尾部开始检查。
+		参数更多见 p116		
 
-	5.3 高阶函数变体：
+	7.3 高阶函数变体：这是序列迭代函数两类变体函数的统称。后缀是 -if 或者 -if-not，接受一个函数作用在序列上。
+		-if 后缀是查找，替换，移除等，函数参数为真的操作。
+		-if-not 则是函数参数为假时的操作。REMOVE-IF-NOT 函数返回满足谓词函数的项。
+		例如：(count-if  #'evenp #(1 2 3 4 5)) -> 2 , 函数 EVENP 检查数是否为偶数。
+		REMOVE-DUPLICATES 函数，移除重复的项。
 	
-	5.4 对整个序列的操作：（包括复制，排序，合并）
+	7.4 对整个序列的操作：
+		复制新序列使用 COPY-SEQ 与 REVERSE 函数，后者为逆序，返回新对象。
 
-	5.5 对子序列的操作：
+		CONCATENATE 函数，拼接两个序列，需要指定类型，例如：
+			(concatenate 'vector #(1 2 3) '(4 5 6)) -> #(1 2 3 4 5 6)
 
-	5.6 序列谓词：
+		MERGE 函数，接受两个序列与一个函数，合并排序后返回，例如：
+			(merge 'vector #(1 3 5) #(2 4 6) #'<) -> #(1 2 3 4 5 6)
 
-	5.7 序列映射函数：
+		SORT 与 STABLE-SORT 函数，为序列排序，接受序列与一个排序方式。返回排序序列。
+		注意这两个函数是破坏性操作，区别是后者不重排重复元素。
+			(sort #(1 3 2 4 1 5 1) #'<) -> #(1 1 1 2 3 4 5)
+			
+	7.5 对子序列的操作：
+		SUBSEQ 函数，解出特定子序列，左闭右开。例如：
+			(subseq "foobazbaz" 3 6) -> "baz"
+
+		SEARCH 函数，查找特定序列首次出现的位置：
+			(search "baz" "foobazbaz") -> 3
+
+		MISMATCH 函数，相同前缀的序列，首次出现分叉的位置：
+			(mismatch "foobaz" "foodd") -> 3
+
+	7.6 序列谓词：在序列上迭代谓词函数，之后处理，见下表：
+		EVERY  一假则假
+		SOME  返回第一个非NIL值，都不满足返回NIL
+		NOTANY 满足返回假，不满足返回真。
+		NOTEVERY 一假则真
+
+		例如：(every #'evenp #(1 2 3 4 5)) -> NIL
+
+	7.7 序列映射函数：将一种操作，使用在序列元素上。
+		MAP 函数，例如：
+			(map 'vector #'+ #(1 2 3) #(1 1 1)) -> #(2 3 4)
+
+		MAP-INTO 函数，不产生新序列，放置于指定序列中，例如：
+			(map-into a #'+ a b c)  ;a b c是向量，结果在 a 里。
+		
+		REDUCE 函数，在一个序列中依次取元素迭代：
+			(reduce #'+ '(1 2 3 4 5)) -> 15
 
 8. 哈希表：键值对表，键相同的含义是 EQL 的相同。
 	使用 MAKE-HASH-TABLE 函数构建 hash 表。例如：(defvar *hash* (make-hash-table)) , 空hash表
