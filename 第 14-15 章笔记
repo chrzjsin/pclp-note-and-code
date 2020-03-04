@@ -1,16 +1,60 @@
 第 14 章 文件与 I/O 操作
-
 1. 对文件的操作：
 	1.1 读取文件与输入流
+		使用 OPEN 函数获得一个输入流，参数是文件名，而需要注意此函数会出错，例如文件不存在等。
+		使用 :if-does-not-exist 参数指定 :error :create nil。
+		
+		与输入流相关的有 READ-CHAR ，READ-LINE，READ 函数，进行读取操作。
+		读取一个字符，读取一行，而 READ 函数读取为一个 S-表达式，返回一个 Lisp 对象，与 PRINT 函数配合使用。
+		而流使用 CLOSE 函数关闭。
+
+		例如：
+			(let ((in (open "G:/pclp-14.txt" :if-does-not-exist nil)))
+	   			(when in (loop for line = (read-line in nil)
+	      				 while line do (format t "~a~%" line))
+	     			(close in)))
+		
+		而想打开二进制文件，在 OPEN 函数里使用 :element-type 'unsigned-byte 8 参数，使用 READ-BYTE 函数读取，返回 0-255 整数。
+
+		而想批量读取，使用 READ-SEQUENCE 函数，传入一个序列以及一个流，使用流中数据填入序列。		
 
 	1.2 写入文件与输出流
+		使用 OPEN 打开一个输出流，加入 :direction :output 参数。
+		而 :if-exist 参数有 :supersede :qppend :overwrite , 分别是替换，写到结尾，覆盖。
 
+		类似的，使用 WRITE-CHAR ，WRITE-LINE ，WRITE-STRING 写入输出流。
+
+		而想打开二进制文件，在 OPEN 函数里使用 :element-type 'unsigned-byte 8 参数，使用 WRITE-BYTE 写入。
+		
+		而想批量写入，使用 WRITE-SEQUENCE 函数，传入一个序列以及一个流，使用序列填入流。
+		
 	1.3 关闭文件与创建新文件
+		文件句柄是很稀缺的资源，所以做完操作需要关闭文件，一般使用 CLOSE 函数。
+
+		但是，实践里一般使用 WITH-OPEN-FILE 宏，读取文件，写入文件，它会自动关闭。
+		例如： (with-open-file (stream "..." :direction :output) (format stream "some.txt")) ;创建新文件
 
 2. 路径名抽象：使用一个路径名对象统一不同文件系统文件名的差别
-	2.1 路径名对象
+	2.1 路径名对象，通过六个组件确定。
+		host 主机
+		device 设备
+		directory 目录
+		name 名称
+		type 类型
+		version 版本
+		
+		其中，目录里使用两个关键字 :absolute :relative ，意思是绝对路径与相对路径
 
-	2.2 构建路径名对象：MAKE-PATHAME 函数
+		PATHNAME 函数，读取文件名字符串，返回路径名对象，(pathname "some/file.txt") -> #p"some/file.txt"
+		PATHNAME-NAME 返回名字,其他类似。
+		从对象到字符串则使用 NAMESTRING 函数，例如 DIRECTORY-NAMESTRING，返回目录字符串。
+
+	2.2 构建路径名对象：MAKE-PATHAME 函数，例如：
+		(make-pathname
+	 	 :directory '(:absolute "foo" "baz")
+	 	 :name "baz"
+		 :type "txt")
+		->#P"/foo/baz/baz.txt"
 
 	2.3 目录名与文件名的区别
 
