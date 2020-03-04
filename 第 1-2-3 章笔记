@@ -1,7 +1,7 @@
 1. 第一部分就是第一章到第三章。
   第一章简要介绍了 Lisp 语言，Lisp语言的历史，Common Lisp 的历史，
   第二章开发环境初步介绍，使用 Lisp in a box ，简单使用 REPL 。
-  而第三章，用 50 多行代码构建了一个具备简单功能的储存 cd 的数据库系统，增删改查。展现了 Common Lisp 的强大实力。
+  而第三章，用 50 多行代码构建了一个具备简单功能的储存 cd 的数据库系统，增删改查。展现了 Common Lisp 的强大实力。代码见 pclp-3.lisp
   特别是最后一节，把一个函数改为一个宏，简直可以说是魔术一般的手法
   
 2. Lisp 之父，John McCarthy ，而 Lisp 这个名字来自列表处理(LISt Processing)。
