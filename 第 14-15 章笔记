@@ -49,21 +49,50 @@
 		PATHNAME-NAME 返回名字,其他类似。
 		从对象到字符串则使用 NAMESTRING 函数，例如 DIRECTORY-NAMESTRING，返回目录字符串。
 
-	2.2 构建路径名对象：MAKE-PATHAME 函数，例如：
+2.2 构建路径名对象：MAKE-PATHAME 函数，例如：
 		(make-pathname
 	 	 :directory '(:absolute "foo" "baz")
 	 	 :name "baz"
 		 :type "txt")
 		->#P"/foo/baz/baz.txt"
 
-	2.3 目录名与文件名的区别
+		而为了保持健壮性，我们应该让用户输入路径，所以一般写成
+			(make-pathname :type "html" :defaults input-file)
+		创建.html文件，其中 input-file 是用户输入的字符串。
+		而使用相对路径，则写为：
+			(make-pathname :directory '(:relative "program") :defaults input-file)
+		
+		使用 MERGE-PATHNAMES 函数，合并两个路径名
+			(merge-pathnames #p"www/a.txt" #p"/foo/")
+			-> #P"/foo/www/a.txt"
 
-3. 与文件系统交互：还有一些操作的函数，
+		反之，使用 ENOUGH-NAMESTRING 函数，拆分出路径：
+			(enough-namestring #p"/foo/www/a.txt" #p"/foo/")
+			-> "www/a.txt"
+		组合使用两个函数，可以是构造出绝对路径不同，但是相对路径相同的路径：			
+
+	2.3 目录名与文件名的区别
+		区分使用目录名与文件名，例如：
+			(make-pathname :directory  '(:absolute "foo") :name "baz") ;文件->#P"/foo/baz"
+			(make-pathname :directory '(:absolute "foo" "baz"))        ;目录 ->#P"/foo/baz/"
+			
+3. 与文件系统交互：还有一些操作的函数，例如：
+		测试文件存在的标准函数：PROBE-FILE
+		删除文件，DELETE-FILE 函数
+		重命名，RENAME-FILE
+		返回上次使用的时间：FILE-WRITE-DATE
+		文件长度，以流为参数：FILE-LENGTH
+		而其他功能函数，在 15 章改进。
 
 4. 其他 I/O
 	4.1 STRING-STREAM 
-
 	4.2 简单了解几种流
+		输出流：BROADCAST-STREAM
+		输入流：CONCATENATED-STREAM
+		双向流：TWO-WAY-STREAM
+		以及 ECHO-STREAM 
+		
+		其实，Common Lisp 里，缺少允许用户自定义流的库，更多信息参考书。
 
 第 15 章 实践 可移植路径名库
 
