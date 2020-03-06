@@ -1,7 +1,6 @@
-第 16 17 章 面向对象
+第 16-17 面向对象
 1. Common Lisp 的面向对象基于广义函数与类系统。
 	oop 的基本思想就是，定义数据类型，将操作关联在上面，而操作的具体行为取决于对象的类型。
-        第一个面向对象语言是 simula ， 而产生巨大影响的是 smalltalk ，Common Lisp 与它几乎同时期。
 
 2. Common Lisp 的类可以继承，构成类层次结构，而所有类的基类是类 T 。
 	Common Lisp 的类支持多继承，而多态性依赖于广义函数。而不是消息传递。
@@ -18,29 +17,50 @@
 			  (defmethod draw ((shape tringle)) ......)
 		
 	3.3 特化与方法组合：广义函数的形参可以特化为一个两元素列表，第一个元素是形参名，而第二个元素是特化符，包括类名，EQL 特化符
+		就是如此形式：(形参名 类名) 或者 (形参名 (EQL  类名))
 		当传入参数符合方法参数，就调用该方法，如果有多个，会依据与方法最相关的调用。
 		此时，使用 CALL-NEXT-METHOD 函数可以调用接下来相关的一个方法。
 
 	3.4 附加方法：上面说的都是主方法，而附加方法，就是提供附加功能的函数，使用限定符：
 		:before :aound :after ，会按顺序调用。
+		:before 在最开始运行，:aound 在中间运行，:after 在最后。:aound  限定的方法里，一般都有一个 CALL-NEXT-METHOD 函数调用。
+		例如：(defmethod draw :after ((shape criale)) ...)
+
 		还有九种组合方法，使得符合的方法组合起来调用，具体参考 Common Lisp 手册。
 
-	3.5 多重方法：不同于其他语言中的方法重载，参数匹配的方法会依据相关性调用，这解决了多重继承中的难题。
+	3.5 多重方法：不同于其他语言中的方法重载，所有参数匹配的方法会依据相关性调用，这解决了多重继承中的难题。
 
 4. 自定义类
 	4.1 DEFCLASS
+		使用 DEFCLASS 宏创建自定义类，基本形式是：(defclass name (dircet-super-class-name*) (slot-specifier*))
+		父类列表里应该按类相关性排列，而一个类的主体是 slot 部分，称为槽。
+		使用 MAKE-INSTANCE 函数创建实例。
 
 	4.2 槽（slot）
+		槽就是保存变量的位置。使用函数 SLOT-VALUE 函数访问，结合 SETF 宏可以改变值。
+		:documentation 槽用途的说明串
 
 	4.3 对象初始化
+		有三种方式：
+		1. :initarg 在创建实例时赋初值。
+		2. :initform 在类中有默认值。
+		3. 广义函数 INITIALIZE-INSTANCE 控制初始化过程，可以使用其他槽的值
+		具体见最后的例子。
 
 	4.4 访问函数与封装
+		就是对槽不能直接改变，需要读写函数，可以通过定义广义函数实现，也可以在类中加入 :reader 与 :writer 
+		而加入 :accesser 就相当于创建了两个方法。
 
 	4.5 分配在类上的槽
+		:allocation 关键字参数，有两个值，:instance 与 :class 后者单一值储存类中，被所有实例共享
 
 	4.6 继承
+		父类上的所有特化方法都可以用于子类对象，名字相同的槽会合并。
+		多重继承，使用类相关性排列方法，解决致命方块问题
 
-	4.7 oop 程序设计
+	4.7 oop 程序设计时一个很大的主题，书上说需要六个月，仔细阅读一些书
+
+例子：
 
 (defparameter *x* 0)
 (defclass bank-account ()
@@ -65,4 +85,3 @@
 						:customer-name "chris"
 						:balance 10000))
 (slot-value *class-account* 'account-type)
-:GOLD
