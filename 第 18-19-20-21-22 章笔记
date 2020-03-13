@@ -30,8 +30,59 @@
 		指令还有更多，可以做具体研究。
 
 2. Common Lisp 的状况系统
+	Common Lisp 的状况系统是其伟大特性之一。与其他语言的异常处理最大的不同，我感觉是再启动，可以在不展开调用栈的情况下处理状况。
+
+	2.1 状况类的定义，使用 DEFINE-CONDITION 定义，默认继承自 CONDITION类，槽只能使用 :initarg 初始化，访问必须使用访问函数。
+		例如：(define-condition log-enter-error (error)
+				((text :initarg :text :reader text)))
+
+	2.2 ERROR 函数初始化，抛出状况
+		上例：(error 'log-enter-error :text text)
+
+	2.3 HANDLER-CASE 状况处理器，当底层函数没有抛出状况，就返回其值，捕获状况，进入处理
+		上例：(handler-case (pare-log-enter text) 
+				(log-enter-error () nil))
+		捕获状况，返回 NIL ，相当于跳过。
+
+	2.4 再启动
+		2.4.1 RESTART-CASE 再启动处理器，使用再启动，相当于将处理代码放在中层函数，但由高层函数决定是否处理。
+			上例：(restart-case (pare-log-enter text) 
+					(skip-log-enter () nil))
+
+		2.4.2 HANDLER-BIND 在高层函数中绑定再启动函数 
+			上例：(handler-bind ((log-enter-error #'(lambda (c) (invoke-restart 'skip-log-enter)))))
+
+		2.4.3 INVOKE-RESTART 与 FIND-RESTART 定义再启动函数
+			可以定义再启动函数：(defun skip-log-enter (c) 
+								(invoke-restart 'skip-log-enter))
+			上例：(handler-bind ((log-enter-error #'skip-log-enter(c))))
 
 3. Common Lisp 的 25 个特殊操作符
+	QUOTE
+	IF
+	PROGN
+	LET
+	LET*
+	SETQ
+	FLET
+	LABELS
+	MACROLET
+	SYMBOL-MACROLET
+	BLOCK
+	TAGBODY
+	GO
+	CATCH
+	THROW
+	UNWIND-PROTECT
+	MULTIPLE-VALUE-CALL
+	EVAL-WHEN
+	LOCALLY
+	LOAD-TIME-VALUE
+	PROGV
+	return-from
+	function
+	the
+	multiple-value-progl
 
 4. 包与符号
 
