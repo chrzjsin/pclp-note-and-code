@@ -87,3 +87,4 @@
 4. 包与符号
 
 5. LOOP 宏
+loop宏是 Common Lisp 里争议比较大的部分。
